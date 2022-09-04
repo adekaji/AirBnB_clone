@@ -1,17 +1,11 @@
 #!/usr/bin/python3
-""" user module"""
-
+"""contains User class"""
 from models.base_model import BaseModel
 
 
 class User(BaseModel):
-    """ user class"""
-
+    """User class based off BaseModel"""
     email = ""
     password = ""
     first_name = ""
     last_name = ""
-
-    def __init__(self, *args, **kwargs):
-        """init user"""
-        super().__init__(*args, **kwargs)

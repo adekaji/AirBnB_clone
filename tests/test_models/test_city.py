@@ -1,41 +1,64 @@
 #!/usr/bin/python3
-"""
-Test file for city class
-"""
-
+"""Unittest for BaseModel"""
+import os
+import time
 import unittest
+from datetime import datetime
+from models import storage
 from models.city import City
-from models.base_model import BaseModel
 
 
-class TestClass(unittest.TestCase):
-    """Test cases"""
+class TestCity(unittest.TestCase):
+    """test BaseModel"""
 
-    def setUp(self):
-        self.city = City()
-        return super().setUp()
+    def test_init(self):
+        """test blank basemodel init"""
+        snapshot = datetime.now()
+        cm1 = City()
+        snapshot2 = datetime.now()
 
-    def tearDown(self):
-        del(self.city)
-        return super().tearDown()
+        self.assertIsInstance(cm1.id, str)
+        self.assertTrue(len(cm1.id) > 0)
+        self.assertTrue('City.' + cm1.id in storage.all().keys())
 
-    def test_create_istance(self):
-        """create a new instance"""
-        self.assertIsInstance(self.city, City)
+        self.assertIsInstance(cm1.created_at, datetime)
+        self.assertLess(cm1.created_at, snapshot2)
+        self.assertGreater(cm1.created_at, snapshot)
+        
+        self.assertIsInstance(cm1.updated_at, datetime)
+        self.assertLess(cm1.updated_at, snapshot2)
+        self.assertGreater(cm1.updated_at, snapshot)
+        
+        cm1.save()
+        self.assertIsInstance(cm1.updated_at, datetime)
+        self.assertGreater(cm1.updated_at, snapshot)
+        self.assertGreater(cm1.updated_at, snapshot2)
+        del cm1
+        
+    def test_init_dict(self):
+        """test dict basemodel init"""
+        test_dict = {'updated_at': datetime(1963, 11, 22, 12, 30, 00, 716921).isoformat('T')
+                     , 'id': 'z3854b62-93fa-fbbe-27de-630706f8313c', 'created_at': datetime(1963, 11, 22, 12, 30, 00, 716921).isoformat('T')}
+        cm2 = City(**test_dict)
 
-    def test_create_istance_check_parent(self):
-        """check if it's instance of parent"""
-        self.assertIsInstance(self.city, BaseModel)
+        self.assertIsInstance(cm2.id, str)
+        self.assertTrue(len(cm2.id) > 0)
+        self.assertTrue(cm2.id == test_dict['id'])
+        
+        self.assertIsInstance(cm2.created_at, datetime)
+        self.assertTrue(cm2.created_at.isoformat('T') == test_dict['created_at'])
+        self.assertIsInstance(cm2.updated_at, datetime)
+        self.assertTrue(cm2.updated_at.isoformat('T') == test_dict['updated_at'])
+        cm2.save()
+        self.assertGreater(cm2.updated_at, cm2.created_at)
+        del cm2
 
-    def test_class_attribut(self):
-        """initialze class attribute"""
-        self.city.name = "kigali"
-        self.assertIs(self.city.name, 'kigali')
+    def test_attribute(self):
+        """asdad"""
+        cm3 = City()
 
-    def test_parent_of_city(self):
-        """check if city is parent of BaseModel"""
-        self.assertEqual(isinstance(self.city, BaseModel), True)
+        self.assertTrue(hasattr(cm3, "state_id"))
+        self.assertTrue(hasattr(cm3, "name"))
 
-
-if __name__ == '__main__':
-    unittest.main()
+        self.assertIsInstance(cm3.state_id, str)
+        self.assertIsInstance(cm3.name, str)
